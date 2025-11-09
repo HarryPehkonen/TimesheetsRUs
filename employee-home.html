@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - TimesheetsRUs</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            padding-bottom: 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left h1 {
+            color: #2c3e50;
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .header-left .welcome {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .profile-link {
+            color: #3498db;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .profile-link:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .quick-action {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+            text-align: center;
+            color: white;
+        }
+
+        .quick-action h2 {
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .quick-action p {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .btn-main {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            width: 100%;
+        }
+
+        .btn-main:active {
+            transform: scale(0.98);
+        }
+
+        .period-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .period-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .period-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .period-card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .period-card-dates {
+            font-size: 13px;
+            color: #7f8c8d;
+        }
+
+        .period-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-section h3 {
+            color: #2c3e50;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            padding-left: 4px;
+        }
+
+        .nav-buttons {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .nav-button {
+            background: white;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .nav-button:active {
+            transform: scale(0.98);
+        }
+
+        .nav-button:hover {
+            border-color: #3498db;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
+        }
+
+        .nav-button-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .nav-button-content {
+            flex: 1;
+        }
+
+        .nav-button-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 4px;
+        }
+
+        .nav-button-desc {
+            font-size: 13px;
+            color: #7f8c8d;
+        }
+
+        .nav-button-arrow {
+            color: #7f8c8d;
+            font-size: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .btn-main:hover {
+                transform: scale(1.02);
+            }
+
+            .nav-button:hover {
+                transform: translateY(-2px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <h1>TimesheetsRUs</h1>
+            <div class="welcome">Welcome back, John</div>
+        </div>
+        <a href="#" class="profile-link" id="profile-link">
+            <span>⚙️</span>
+            <span>Profile</span>
+        </a>
+    </div>
+
+    <div class="container">
+        <div class="quick-action">
+            <h2>Ready to log your hours?</h2>
+            <p>Quick entry for today's timesheet</p>
+            <button class="btn-main" id="add-today">+ Add Today's Hours</button>
+        </div>
+
+        <div class="period-cards">
+            <div class="period-card">
+                <div class="period-card-header">
+                    <div class="period-card-title">Current Period</div>
+                    <div class="period-card-dates">Oct 16 - Oct 31</div>
+                </div>
+                <div class="period-stats">
+                    <div class="stat">
+                        <div class="stat-value">80.0</div>
+                        <div class="stat-label">Regular</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">6.0</div>
+                        <div class="stat-label">Overtime</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">5.0</div>
+                        <div class="stat-label">Travel</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">0.0</div>
+                        <div class="stat-label">Stat</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="period-card">
+                <div class="period-card-header">
+                    <div class="period-card-title">Previous Period</div>
+                    <div class="period-card-dates">Oct 1 - Oct 15</div>
+                </div>
+                <div class="period-stats">
+                    <div class="stat">
+                        <div class="stat-value">72.0</div>
+                        <div class="stat-label">Regular</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">3.0</div>
+                        <div class="stat-label">Overtime</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">2.0</div>
+                        <div class="stat-label">Travel</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">8.0</div>
+                        <div class="stat-label">Stat</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <h3>Your Timesheet</h3>
+            <div class="nav-buttons">
+                <a href="#" class="nav-button" id="nav-entry">
+                    <div class="nav-button-icon">📝</div>
+                    <div class="nav-button-content">
+                        <div class="nav-button-title">Time Entry</div>
+                        <div class="nav-button-desc">Add or edit daily hours</div>
+                    </div>
+                    <div class="nav-button-arrow">→</div>
+                </a>
+
+                <a href="#" class="nav-button" id="nav-history">
+                    <div class="nav-button-icon">📋</div>
+                    <div class="nav-button-content">
+                        <div class="nav-button-title">Timesheet History</div>
+                        <div class="nav-button-desc">View and edit past entries</div>
+                    </div>
+                    <div class="nav-button-arrow">→</div>
+                </a>
+
+                <a href="#" class="nav-button" id="nav-summary">
+                    <div class="nav-button-icon">📊</div>
+                    <div class="nav-button-content">
+                        <div class="nav-button-title">Pay Period Summary</div>
+                        <div class="nav-button-desc">View detailed hours breakdown</div>
+                    </div>
+                    <div class="nav-button-arrow">→</div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add Today's Hours button
+        document.getElementById('add-today').addEventListener('click', function() {
+            alert('Navigate to Daily Time Entry with today\'s date pre-filled (This is a UI demo)');
+        });
+
+        // Navigation buttons
+        document.getElementById('nav-entry').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Navigate to Daily Time Entry (This is a UI demo)');
+        });
+
+        document.getElementById('nav-history').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Navigate to Timesheet History (This is a UI demo)');
+        });
+
+        document.getElementById('nav-summary').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Navigate to Pay Period Summary (This is a UI demo)');
+        });
+
+        // Profile link
+        document.getElementById('profile-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Navigate to Profile/Settings (This is a UI demo)');
+        });
+    </script>
+</body>
+</html>

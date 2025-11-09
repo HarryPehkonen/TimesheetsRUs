@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timesheet History - TimesheetsRUs</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 24px;
+        }
+
+        .profile-link {
+            color: #3498db;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .profile-link:hover {
+            text-decoration: underline;
+        }
+
+        .period-selector {
+            display: flex;
+            gap: 8px;
+        }
+
+        .period-selector select {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #2c3e50;
+            cursor: pointer;
+            background: white;
+        }
+
+        .period-selector select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .container {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .summary-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .summary-banner h2 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            opacity: 0.9;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .summary-stat {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 12px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .summary-stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }
+
+        .summary-stat-value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .entries-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .entry-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 4px solid #e1e8ed;
+        }
+
+        .entry-card:active {
+            transform: scale(0.98);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .entry-card.status-submitted {
+            border-left-color: #3498db;
+        }
+
+        .entry-card.status-entered {
+            border-left-color: #27ae60;
+        }
+
+        .entry-card.status-updated {
+            border-left-color: #f39c12;
+            background: #fff9e6;
+        }
+
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+
+        .entry-date {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .entry-hours {
+            font-size: 20px;
+            font-weight: 700;
+            color: #3498db;
+        }
+
+        .entry-hours-label {
+            font-size: 11px;
+            color: #7f8c8d;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .entry-description {
+            color: #2c3e50;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .entry-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .entry-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 10px;
+            background: #ecf0f1;
+            color: #7f8c8d;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .tag.travel {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .tag.stat {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-badge.submitted {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .status-badge.entered {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .status-badge.updated {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .status-badge.updated::before {
+            content: "⚠ ";
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            color: #2c3e50;
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .fab {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+        }
+
+        .fab:active {
+            transform: scale(0.9);
+        }
+
+        .section-header {
+            color: #7f8c8d;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            padding-left: 4px;
+        }
+
+        @media (min-width: 768px) {
+            .entry-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            }
+
+            .fab:hover {
+                transform: scale(1.1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-top">
+            <h1>Timesheet History</h1>
+            <a href="#" class="profile-link" id="profile-link">
+                <span>⚙️</span>
+                <span>Profile</span>
+            </a>
+        </div>
+        <div class="period-selector">
+            <select id="month-select">
+                <option>October 2025</option>
+                <option>September 2025</option>
+                <option>August 2025</option>
+                <option>July 2025</option>
+            </select>
+            <select id="period-select">
+                <option>16th - 31st</option>
+                <option>1st - 15th</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="summary-banner">
+            <h2>Current Pay Period: Oct 16 - Oct 31, 2025</h2>
+            <div class="summary-stats">
+                <div class="summary-stat">
+                    <div class="summary-stat-label">Regular Hours</div>
+                    <div class="summary-stat-value">80.0</div>
+                </div>
+                <div class="summary-stat">
+                    <div class="summary-stat-label">Overtime Hours</div>
+                    <div class="summary-stat-value">6.0</div>
+                </div>
+                <div class="summary-stat">
+                    <div class="summary-stat-label">Travel Hours</div>
+                    <div class="summary-stat-value">5.0</div>
+                </div>
+                <div class="summary-stat">
+                    <div class="summary-stat-label">Stat Hours</div>
+                    <div class="summary-stat-value">0.0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-header">Recent Entries</div>
+
+        <div class="entries-list">
+            <div class="entry-card status-submitted">
+                <div class="entry-header">
+                    <div>
+                        <div class="entry-date">Oct 31, 2025</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div class="entry-hours">8.0</div>
+                        <div class="entry-hours-label">Hours</div>
+                    </div>
+                </div>
+                <div class="entry-description">Software development and testing</div>
+                <div class="entry-footer">
+                    <div class="entry-tags"></div>
+                    <div class="status-badge submitted">Submitted</div>
+                </div>
+            </div>
+
+            <div class="entry-card status-updated">
+                <div class="entry-header">
+                    <div>
+                        <div class="entry-date">Oct 30, 2025</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div class="entry-hours">9.0</div>
+                        <div class="entry-hours-label">Hours</div>
+                    </div>
+                </div>
+                <div class="entry-description">Client meeting and project work</div>
+                <div class="entry-footer">
+                    <div class="entry-tags">
+                        <span class="tag travel">Travel: 2h</span>
+                    </div>
+                    <div class="status-badge updated">Updated</div>
+                </div>
+            </div>
+
+            <div class="entry-card status-entered">
+                <div class="entry-header">
+                    <div>
+                        <div class="entry-date">Oct 29, 2025</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div class="entry-hours">8.0</div>
+                        <div class="entry-hours-label">Hours</div>
+                    </div>
+                </div>
+                <div class="entry-description">Code review and bug fixes</div>
+                <div class="entry-footer">
+                    <div class="entry-tags"></div>
+                    <div class="status-badge entered">Entered</div>
+                </div>
+            </div>
+
+            <div class="entry-card status-entered">
+                <div class="entry-header">
+                    <div>
+                        <div class="entry-date">Oct 28, 2025</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div class="entry-hours">10.0</div>
+                        <div class="entry-hours-label">Hours</div>
+                    </div>
+                </div>
+                <div class="entry-description">Emergency production deployment and monitoring</div>
+                <div class="entry-footer">
+                    <div class="entry-tags"></div>
+                    <div class="status-badge entered">Entered</div>
+                </div>
+            </div>
+
+            <div class="entry-card status-entered">
+                <div class="entry-header">
+                    <div>
+                        <div class="entry-date">Oct 25, 2025</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div class="entry-hours">8.0</div>
+                        <div class="entry-hours-label">Hours</div>
+                    </div>
+                </div>
+                <div class="entry-description">Feature development - user dashboard</div>
+                <div class="entry-footer">
+                    <div class="entry-tags"></div>
+                    <div class="status-badge entered">Entered</div>
+                </div>
+            </div>
+
+            <div class="entry-card status-entered">
+                <div class="entry-header">
+                    <div>
+                        <div class="entry-date">Oct 24, 2025</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div class="entry-hours">8.0</div>
+                        <div class="entry-hours-label">Hours</div>
+                    </div>
+                </div>
+                <div class="entry-description">Database optimization and performance tuning</div>
+                <div class="entry-footer">
+                    <div class="entry-tags"></div>
+                    <div class="status-badge entered">Entered</div>
+                </div>
+            </div>
+
+            <div class="entry-card status-entered">
+                <div class="entry-header">
+                    <div>
+                        <div class="entry-date">Oct 23, 2025</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div class="entry-hours">10.0</div>
+                        <div class="entry-hours-label">Hours</div>
+                    </div>
+                </div>
+                <div class="entry-description">Site survey and requirements gathering</div>
+                <div class="entry-footer">
+                    <div class="entry-tags">
+                        <span class="tag travel">Travel: 3h</span>
+                    </div>
+                    <div class="status-badge entered">Entered</div>
+                </div>
+            </div>
+
+            <div class="entry-card status-entered">
+                <div class="entry-header">
+                    <div>
+                        <div class="entry-date">Oct 22, 2025</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div class="entry-hours">8.0</div>
+                        <div class="entry-hours-label">Hours</div>
+                    </div>
+                </div>
+                <div class="entry-description">API integration and documentation</div>
+                <div class="entry-footer">
+                    <div class="entry-tags"></div>
+                    <div class="status-badge entered">Entered</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="fab">+</button>
+
+    <script>
+        // Entry card click handlers
+        document.querySelectorAll('.entry-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const date = this.querySelector('.entry-date').textContent;
+                alert(`Edit entry for ${date}\n\nNavigate to Daily Time Entry Screen with pre-filled data (This is a UI demo)`);
+            });
+        });
+
+        // Period selector handlers
+        document.getElementById('month-select').addEventListener('change', function() {
+            alert('Period changed (This is a UI demo)');
+        });
+
+        document.getElementById('period-select').addEventListener('change', function() {
+            alert('Period changed (This is a UI demo)');
+        });
+
+        // FAB (Floating Action Button) handler
+        document.querySelector('.fab').addEventListener('click', function() {
+            alert('Navigate to Daily Time Entry Screen to create new entry (This is a UI demo)');
+        });
+
+        // Profile link
+        document.getElementById('profile-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Navigate to Profile/Settings (This is a UI demo)');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entries Queue - TimesheetsRUs Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .header-left h1 {
+            color: #2c3e50;
+            font-size: 28px;
+            margin-bottom: 4px;
+        }
+
+        .header-left p {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .profile-link {
+            color: #3498db;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .profile-link:hover {
+            text-decoration: underline;
+        }
+
+        .header-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            padding-top: 16px;
+            border-top: 2px solid #ecf0f1;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #7f8c8d;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .stat.attention .stat-value {
+            color: #e74c3c;
+        }
+
+        .stat.warning .stat-value {
+            color: #f39c12;
+        }
+
+        .attention-notice {
+            background: #fff3e0;
+            border-left: 4px solid #f57c00;
+            padding: 16px;
+            margin-bottom: 24px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .attention-notice .icon {
+            font-size: 24px;
+        }
+
+        .attention-notice .text {
+            color: #e65100;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .entries-section {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .section-header h2 {
+            color: #2c3e50;
+            font-size: 20px;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-filter {
+            padding: 8px 16px;
+            border: 2px solid #e1e8ed;
+            background: white;
+            color: #7f8c8d;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-filter:hover {
+            border-color: #3498db;
+            color: #3498db;
+        }
+
+        .btn-filter.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .bulk-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-bulk {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-bulk-enter {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-bulk-enter:hover {
+            background: #229954;
+        }
+
+        .entries-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .entries-table thead {
+            background: #f8f9fa;
+        }
+
+        .entries-table th {
+            padding: 12px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .entries-table th.center {
+            text-align: center;
+        }
+
+        .entries-table th.checkbox-col {
+            width: 40px;
+        }
+
+        .entries-table td {
+            padding: 16px 12px;
+            border-top: 1px solid #ecf0f1;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .entries-table td.center {
+            text-align: center;
+        }
+
+        .entries-table tbody tr {
+            transition: background 0.2s;
+        }
+
+        .entries-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .entries-table tbody tr.row-updated {
+            background: #fff9e6;
+            border-left: 4px solid #f39c12;
+        }
+
+        .entries-table tbody tr.row-updated:hover {
+            background: #fff3d6;
+        }
+
+        .employee-name {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .entry-date {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .hours-cell {
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .description-cell {
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 3px 8px;
+            background: #ecf0f1;
+            color: #7f8c8d;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .tag.travel {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .tag.stat {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-submitted {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .status-updated {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .status-updated::before {
+            content: "⚠ ";
+            font-weight: 700;
+        }
+
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #3498db;
+        }
+
+        .btn-enter {
+            padding: 8px 16px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-enter:hover {
+            background: #2980b9;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        .empty-state h3 {
+            color: #2c3e50;
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        @media (max-width: 1024px) {
+            .header-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .entries-table {
+                font-size: 12px;
+            }
+
+            .entries-table th,
+            .entries-table td {
+                padding: 10px 8px;
+            }
+
+            .description-cell {
+                max-width: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-top">
+                <div class="header-left">
+                    <h1>Entries Queue</h1>
+                    <p>All pending entries requiring attention across all pay periods</p>
+                </div>
+                <a href="#" class="profile-link" id="profile-link">
+                    <span>⚙️</span>
+                    <span>Profile</span>
+                </a>
+            </div>
+            <div class="header-stats">
+                <div class="stat attention">
+                    <div class="stat-label">Total Pending</div>
+                    <div class="stat-value">14</div>
+                </div>
+                <div class="stat warning">
+                    <div class="stat-label">Updated</div>
+                    <div class="stat-value">6</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Submitted</div>
+                    <div class="stat-value">8</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Employees</div>
+                    <div class="stat-value">5</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="attention-notice">
+            <span class="icon">⚠</span>
+            <span class="text">14 entries require your attention. Updated entries should be processed first.</span>
+        </div>
+
+        <div class="entries-section">
+            <div class="section-header">
+                <h2>Pending Entries</h2>
+                <div class="filter-buttons">
+                    <button class="btn-filter active">All Pending</button>
+                    <button class="btn-filter">Updated Only</button>
+                    <button class="btn-filter">Submitted Only</button>
+                </div>
+            </div>
+
+            <div class="bulk-actions" style="margin-bottom: 16px;">
+                <button class="btn-bulk btn-bulk-enter">Mark Selected as Entered</button>
+            </div>
+
+            <table class="entries-table">
+                <thead>
+                    <tr>
+                        <th class="checkbox-col center"><input type="checkbox" class="checkbox" id="select-all"></th>
+                        <th>Employee</th>
+                        <th>Date</th>
+                        <th class="center">Hours</th>
+                        <th>Description</th>
+                        <th>Tags</th>
+                        <th>Status</th>
+                        <th class="center">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="row-updated">
+                        <td class="center"><input type="checkbox" class="checkbox"></td>
+                        <td><div class="employee-name">John Smith</div></td>
+                        <td><div class="entry-date">Oct 30, 2025</div></td>
+                        <td class="hours-cell center">9.0</td>
+                        <td class="description-cell">Client meeting and project work</td>
+                        <td><div class="tags"><span class="tag travel">Travel: 2h</span></div></td>
+                        <td><span class="status-badge status-updated">Updated</span></td>
+                        <td class="center"><button class="btn-enter">Enter</button></td>
+                    </tr>
+                    <tr class="row-updated">
+                        <td class="center"><input type="checkbox" class="checkbox"></td>
+                        <td><div class="employee-name">Sarah Johnson</div></td>
+                        <td><div class="entry-date">Oct 28, 2025</div></td>
+                        <td class="hours-cell center">8.0</td>
+                        <td class="description-cell">Updated hours for payroll correction</td>
+                        <td><div class="tags"></div></td>
+                        <td><span class="status-badge status-updated">Updated</span></td>
+                        <td class="center"><button class="btn-enter">Enter</button></td>
+                    </tr>
+                    <tr class="row-updated">
+                        <td class="center"><input type="checkbox" class="checkbox"></td>
+                        <td><div class="employee-name">Sarah Johnson</div></td>
+                        <td><div class="entry-date">Oct 27, 2025</div></td>
+                        <td class="hours-cell center">10.0</td>
+                        <td class="description-cell">Added stat holiday hours</td>
+                        <td><div class="tags"><span class="tag stat">Stat Holiday</span></div></td>
+                        <td><span class="status-badge status-updated">Updated</span></td>
+                        <td class="center"><button class="btn-enter">Enter</button></td>
+                    </tr>
+                    <tr class="row-updated">
+                        <td class="center"><input type="checkbox" class="checkbox"></td>
+                        <td><div class="employee-name">Michael Chen</div></td>
+                        <td><div class="entry-date">Oct 26, 2025</div></td>
+                        <td class="hours-cell center">8.5</td>
+                        <td class="description-cell">Corrected time entry</td>
+                        <td><div class="tags"></div></td>
+                        <td><span class="status-badge status-updated">Updated</span></td>
+                        <td class="center"><button class="btn-enter">Enter</button></td>
+                    </tr>
+                    <tr class="row-updated">
+                        <td class="center"><input type="checkbox" class="checkbox"></td>
+                        <td><div class="employee-name">Michael Chen</div></td>
+                        <td><div class="entry-date">Oct 25, 2025</div></td>
+                        <td class="hours-cell center">9.0</td>
+                        <td class="description-cell">Added travel time</td>
+                        <td><div class="tags"><span class="tag travel">Travel: 1h</span></div></td>
+                        <td><span class="status-badge status-updated">Updated</span></td>
+                        <td class="center"><button class="btn-enter">Enter</button></td>
+                    </tr>
+                    <tr class="row-updated">
+                        <td class="center"><input type="checkbox" class="checkbox"></td>
+                        <td><div class="employee-name">Michael Chen</div></td>
+                        <td><div class="entry-date">Oct 24, 2025</div></td>
+                        <td class="hours-cell center">8.0</td>
+                        <td class="description-cell">Updated description for accuracy</td>
+                        <td><div class="tags"></div></td>
+                        <td><span class="status-badge status-updated">Updated</span></td>
+                        <td class="center"><button class="btn-enter">Enter</button></td>
+                    </tr>
+                    <tr>
+                        <td class="center"><input type="checkbox" class="checkbox"></td>
+                        <td><div class="employee-name">John Smith</div></td>
+                        <td><div class="entry-date">Oct 31, 2025</div></td>
+                        <td class="hours-cell center">8.0</td>
+                        <td class="description-cell">Software development and testing</td>
+                        <td><div class="tags"></div></td>
+                        <td><span class="status-badge status-submitted">Submitted</span></td>
+                        <td class="center"><button class="btn-enter">Enter</button></td>
+                    </tr>
+                    <tr>
+                        <td class="center"><input type="checkbox" class="checkbox"></td>
+                        <td><div class="employee-name">Emily Davis</div></td>
+                        <td><div class="entry-date">Oct 31, 2025</div></td>
+                        <td class="hours-cell center">8.0</td>
+                        <td class="description-cell">Client presentations and follow-up</td>
+                        <td><div class="tags"></div></td>
+                        <td><span class="status-badge status-submitted">Submitted</span></td>
+                        <td class="center"><button class="btn-enter">Enter</button></td>
+                    </tr>
+                    <tr>
+                        <td class="center"><input type="checkbox" class="checkbox"></td>
+                        <td><div class="employee-name">Emily Davis</div></td>
+                        <td><div class="entry-date">Oct 30, 2025</div></td>
+                        <td class="hours-cell center">9.0</td>
+                        <td class="description-cell">Sales meetings and proposal writing</td>
+                        <td><div class="tags"></div></td>
+                        <td><span class="status-badge status-submitted">Submitted</span></td>
+                        <td class="center"><button class="btn-enter">Enter</button></td>
+                    </tr>
+                    <tr>
+                        <td class="center"><input type="checkbox" class="checkbox"></td>
+                        <td><div class="employee-name">David Martinez</div></td>
+                        <td><div class="entry-date">Oct 31, 2025</div></td>
+                        <td class="hours-cell center">8.0</td>
+                        <td class="description-cell">Infrastructure maintenance and updates</td>
+                        <td><div class="tags"></div></td>
+                        <td><span class="status-badge status-submitted">Submitted</span></td>
+                        <td class="center"><button class="btn-enter">Enter</button></td>
+                    </tr>
+                    <tr>
+                        <td class="center"><input type="checkbox" class="checkbox"></td>
+                        <td><div class="employee-name">David Martinez</div></td>
+                        <td><div class="entry-date">Oct 30, 2025</div></td>
+                        <td class="hours-cell center">10.0</td>
+                        <td class="description-cell">Emergency server maintenance</td>
+                        <td><div class="tags"><span class="tag travel">Travel: 2h</span></div></td>
+                        <td><span class="status-badge status-submitted">Submitted</span></td>
+                        <td class="center"><button class="btn-enter">Enter</button></td>
+                    </tr>
+                    <tr>
+                        <td class="center"><input type="checkbox" class="checkbox"></td>
+                        <td><div class="employee-name">Jennifer Wilson</div></td>
+                        <td><div class="entry-date">Oct 31, 2025</div></td>
+                        <td class="hours-cell center">8.0</td>
+                        <td class="description-cell">Training new team members</td>
+                        <td><div class="tags"></div></td>
+                        <td><span class="status-badge status-submitted">Submitted</span></td>
+                        <td class="center"><button class="btn-enter">Enter</button></td>
+                    </tr>
+                    <tr>
+                        <td class="center"><input type="checkbox" class="checkbox"></td>
+                        <td><div class="employee-name">Jennifer Wilson</div></td>
+                        <td><div class="entry-date">Oct 30, 2025</div></td>
+                        <td class="hours-cell center">8.0</td>
+                        <td class="description-cell">Documentation and process improvement</td>
+                        <td><div class="tags"></div></td>
+                        <td><span class="status-badge status-submitted">Submitted</span></td>
+                        <td class="center"><button class="btn-enter">Enter</button></td>
+                    </tr>
+                    <tr>
+                        <td class="center"><input type="checkbox" class="checkbox"></td>
+                        <td><div class="employee-name">Jennifer Wilson</div></td>
+                        <td><div class="entry-date">Oct 29, 2025</div></td>
+                        <td class="hours-cell center">9.0</td>
+                        <td class="description-cell">Project planning and coordination</td>
+                        <td><div class="tags"><span class="tag travel">Travel: 1h</span></div></td>
+                        <td><span class="status-badge status-submitted">Submitted</span></td>
+                        <td class="center"><button class="btn-enter">Enter</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Select All checkbox
+        document.getElementById('select-all').addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.entries-table tbody .checkbox');
+            checkboxes.forEach(cb => cb.checked = this.checked);
+        });
+
+        // Filter buttons
+        document.querySelectorAll('.btn-filter').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                alert(`Filter: ${this.textContent} (This is a UI demo)`);
+            });
+        });
+
+        // Mark Selected as Entered
+        document.querySelector('.btn-bulk-enter').addEventListener('click', function() {
+            const selected = document.querySelectorAll('.entries-table tbody .checkbox:checked');
+            if (selected.length === 0) {
+                alert('Please select entries to mark as entered');
+            } else {
+                alert(`Marking ${selected.length} entries as Entered (This is a UI demo)`);
+            }
+        });
+
+        // Individual Enter buttons
+        document.querySelectorAll('.btn-enter').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.stopPropagation();
+                alert('Entry marked as Entered (This is a UI demo)');
+            });
+        });
+
+        // Profile link
+        document.getElementById('profile-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Navigate to Profile/Settings (This is a UI demo)');
+        });
+    </script>
+</body>
+</html>

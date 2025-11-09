@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile & Settings - TimesheetsRUs</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            padding-bottom: 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left h1 {
+            color: #2c3e50;
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .header-left .subtitle {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .back-link {
+            color: #3498db;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            color: white;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-size: 22px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 4px;
+        }
+
+        .profile-email {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 13px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group input:read-only {
+            background: #f8f9fa;
+            color: #7f8c8d;
+            cursor: not-allowed;
+        }
+
+        .helper-text {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 6px;
+        }
+
+        .theme-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .theme-option {
+            position: relative;
+        }
+
+        .theme-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .theme-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .theme-option input[type="radio"]:checked + .theme-label {
+            border-color: #667eea;
+            background: #f5f7ff;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .theme-label:hover {
+            border-color: #667eea;
+        }
+
+        .theme-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .theme-name {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 16px;
+        }
+
+        .theme-desc {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 4px;
+            text-align: center;
+        }
+
+        .btn-primary {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            margin-bottom: 12px;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-logout {
+            width: 100%;
+            background: white;
+            color: #e74c3c;
+            border: 2px solid #e74c3c;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:active {
+            transform: scale(0.98);
+        }
+
+        .danger-zone {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 2px solid #ecf0f1;
+        }
+
+        .danger-zone-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #e74c3c;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-banner {
+            background: #e8f4fd;
+            border-left: 4px solid #3498db;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .info-banner-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        .info-banner-text {
+            font-size: 13px;
+            color: #5a6c7d;
+            line-height: 1.5;
+        }
+
+        @media (min-width: 768px) {
+            .btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            }
+
+            .btn-logout:hover {
+                background: #fee;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <h1>Profile & Settings</h1>
+            <div class="subtitle">Manage your account</div>
+        </div>
+        <a href="#" class="back-link" id="back-link">
+            <span>←</span>
+            <span>Back</span>
+        </a>
+    </div>
+
+    <div class="container">
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar">JD</div>
+                <div class="profile-info">
+                    <div class="profile-name">John Doe</div>
+                    <div class="profile-email">john.doe@example.com</div>
+                </div>
+            </div>
+
+            <div class="info-banner">
+                <div class="info-banner-title">🔒 Secure Authentication</div>
+                <div class="info-banner-text">
+                    Your account is secured via OAuth. Your email address is managed by your identity provider and cannot be changed here.
+                </div>
+            </div>
+
+            <div class="section-title">Personal Information</div>
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" value="john.doe@example.com" readonly>
+                <div class="helper-text">Provided by your identity provider (Google, Facebook, etc.)</div>
+            </div>
+
+            <div class="form-group">
+                <label for="first-name">First Name</label>
+                <input type="text" id="first-name" name="first-name" value="John" placeholder="Enter your first name">
+            </div>
+
+            <div class="form-group">
+                <label for="last-name">Last Name</label>
+                <input type="text" id="last-name" name="last-name" value="Doe" placeholder="Enter your last name">
+            </div>
+        </div>
+
+        <div class="profile-card">
+            <div class="section-title">Appearance</div>
+
+            <div class="theme-selector">
+                <div class="theme-option">
+                    <input type="radio" id="theme-light" name="theme" value="light" checked>
+                    <label for="theme-light" class="theme-label">
+                        <div class="theme-icon">☀️</div>
+                        <div class="theme-name">Light</div>
+                        <div class="theme-desc">Classic bright theme</div>
+                    </label>
+                </div>
+
+                <div class="theme-option">
+                    <input type="radio" id="theme-dark" name="theme" value="dark">
+                    <label for="theme-dark" class="theme-label">
+                        <div class="theme-icon">🌙</div>
+                        <div class="theme-name">Dark</div>
+                        <div class="theme-desc">Easy on the eyes</div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-card">
+            <button class="btn-primary" id="save-changes">Save Changes</button>
+
+            <div class="danger-zone">
+                <div class="danger-zone-title">Account Actions</div>
+                <button class="btn-logout" id="logout">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Back button
+        document.getElementById('back-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Navigate back to previous screen (This is a UI demo)');
+        });
+
+        // Save changes button
+        document.getElementById('save-changes').addEventListener('click', function() {
+            const firstName = document.getElementById('first-name').value;
+            const lastName = document.getElementById('last-name').value;
+            const theme = document.querySelector('input[name="theme"]:checked').value;
+
+            alert(`Saving changes:\nFirst Name: ${firstName}\nLast Name: ${lastName}\nTheme: ${theme}\n\n(This is a UI demo)`);
+        });
+
+        // Logout button
+        document.getElementById('logout').addEventListener('click', function() {
+            if (confirm('Are you sure you want to logout?')) {
+                alert('Logging out and returning to login screen (This is a UI demo)');
+            }
+        });
+
+        // Theme selection visual feedback
+        document.querySelectorAll('input[name="theme"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                console.log('Theme changed to:', this.value);
+            });
+        });
+
+        // Update profile avatar initials based on name changes
+        function updateAvatar() {
+            const firstName = document.getElementById('first-name').value;
+            const lastName = document.getElementById('last-name').value;
+            const initials = (firstName.charAt(0) || '') + (lastName.charAt(0) || '');
+            document.querySelector('.profile-avatar').textContent = initials.toUpperCase() || '?';
+            document.querySelector('.profile-name').textContent = `${firstName} ${lastName}`.trim() || 'Unknown User';
+        }
+
+        document.getElementById('first-name').addEventListener('input', updateAvatar);
+        document.getElementById('last-name').addEventListener('input', updateAvatar);
+    </script>
+</body>
+</html>

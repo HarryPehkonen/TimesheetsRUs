@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Timesheet Detail - TimesheetsRUs Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left h1 {
+            color: #2c3e50;
+            font-size: 28px;
+            margin-bottom: 4px;
+        }
+
+        .header-left .employee-name {
+            color: #3498db;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .header-left .period {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .profile-link {
+            color: #3498db;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .profile-link:hover {
+            text-decoration: underline;
+        }
+
+        .btn-back {
+            background: #ecf0f1;
+            color: #2c3e50;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-back:hover {
+            background: #d5dbdb;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .card-label {
+            font-size: 12px;
+            color: #7f8c8d;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .card-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .card-unit {
+            font-size: 14px;
+            color: #95a5a6;
+            font-weight: 400;
+        }
+
+        .card.regular {
+            border-left: 4px solid #3498db;
+        }
+
+        .card.overtime {
+            border-left: 4px solid #e74c3c;
+        }
+
+        .card.travel {
+            border-left: 4px solid #f39c12;
+        }
+
+        .card.stat {
+            border-left: 4px solid #9b59b6;
+        }
+
+        .entries-section {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+        }
+
+        .entries-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .entries-header h2 {
+            color: #2c3e50;
+            font-size: 20px;
+        }
+
+        .attention-notice {
+            background: #fff3e0;
+            border-left: 4px solid #f57c00;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .attention-notice .icon {
+            font-size: 20px;
+        }
+
+        .attention-notice .text {
+            color: #e65100;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .btn-mark-all {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-mark-all:hover {
+            background: #229954;
+        }
+
+        .entries-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .entries-table thead {
+            background: #f8f9fa;
+        }
+
+        .entries-table th {
+            padding: 12px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .entries-table td {
+            padding: 16px 12px;
+            border-top: 1px solid #ecf0f1;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .entries-table tbody tr {
+            transition: background 0.2s;
+        }
+
+        .entries-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .entries-table tbody tr.row-updated {
+            background: #fff9e6;
+            border-left: 4px solid #f39c12;
+        }
+
+        .entries-table tbody tr.row-updated:hover {
+            background: #fff3d6;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-submitted {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .status-entered {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .status-updated {
+            background: #fff3e0;
+            color: #f57c00;
+            position: relative;
+        }
+
+        .status-updated::before {
+            content: "⚠ ";
+            font-weight: 700;
+        }
+
+        .hours-cell {
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .description-cell {
+            max-width: 350px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 3px 8px;
+            background: #ecf0f1;
+            color: #7f8c8d;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .tag.travel {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .tag.stat {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .btn-enter {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-enter:hover {
+            background: #2980b9;
+        }
+
+        .btn-enter.entered {
+            background: #27ae60;
+        }
+
+        .btn-enter.entered:hover {
+            background: #229954;
+        }
+
+        @media (max-width: 1024px) {
+            .header {
+                flex-direction: column;
+                gap: 16px;
+                align-items: flex-start;
+            }
+
+            .summary-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .entries-table {
+                font-size: 12px;
+            }
+
+            .entries-table th,
+            .entries-table td {
+                padding: 8px;
+            }
+
+            .description-cell {
+                max-width: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <h1>Employee Timesheet Detail</h1>
+                <div class="employee-name">John Smith</div>
+                <p class="period">October 16 - October 31, 2025</p>
+            </div>
+            <div class="header-right">
+                <a href="#" class="profile-link" id="profile-link">
+                    <span>⚙️</span>
+                    <span>Profile</span>
+                </a>
+                <button class="btn-back">← Back to Dashboard</button>
+            </div>
+        </div>
+
+        <div class="summary-cards">
+            <div class="card regular">
+                <div class="card-label">Regular Hours</div>
+                <div class="card-value">80.0 <span class="card-unit">hrs</span></div>
+            </div>
+
+            <div class="card overtime">
+                <div class="card-label">Overtime Hours</div>
+                <div class="card-value">6.0 <span class="card-unit">hrs</span></div>
+            </div>
+
+            <div class="card travel">
+                <div class="card-label">Travel Hours</div>
+                <div class="card-value">5.0 <span class="card-unit">hrs</span></div>
+            </div>
+
+            <div class="card stat">
+                <div class="card-label">Stat Hours</div>
+                <div class="card-value">0.0 <span class="card-unit">hrs</span></div>
+            </div>
+        </div>
+
+        <div class="entries-section">
+            <div class="attention-notice">
+                <span class="icon">⚠</span>
+                <span class="text">2 entries require attention (Updated or Submitted)</span>
+            </div>
+
+            <div class="entries-header">
+                <h2>Time Entries</h2>
+                <button class="btn-mark-all">Mark All as Entered</button>
+            </div>
+
+            <table class="entries-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Hours</th>
+                        <th>Description</th>
+                        <th>Travel</th>
+                        <th>Stat</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Oct 31, 2025</td>
+                        <td class="hours-cell">8.0</td>
+                        <td class="description-cell">Software development and testing</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td><span class="status-badge status-submitted">Submitted</span></td>
+                        <td><button class="btn-enter">Enter</button></td>
+                    </tr>
+                    <tr class="row-updated">
+                        <td>Oct 30, 2025</td>
+                        <td class="hours-cell">9.0</td>
+                        <td class="description-cell">Client meeting and project work</td>
+                        <td>2h</td>
+                        <td>-</td>
+                        <td><span class="status-badge status-updated">Updated</span></td>
+                        <td><button class="btn-enter">Enter</button></td>
+                    </tr>
+                    <tr>
+                        <td>Oct 29, 2025</td>
+                        <td class="hours-cell">8.0</td>
+                        <td class="description-cell">Code review and bug fixes</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td><span class="status-badge status-entered">Entered</span></td>
+                        <td><button class="btn-enter entered">✓ Entered</button></td>
+                    </tr>
+                    <tr>
+                        <td>Oct 28, 2025</td>
+                        <td class="hours-cell">10.0</td>
+                        <td class="description-cell">Emergency production deployment and monitoring</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td><span class="status-badge status-entered">Entered</span></td>
+                        <td><button class="btn-enter entered">✓ Entered</button></td>
+                    </tr>
+                    <tr>
+                        <td>Oct 25, 2025</td>
+                        <td class="hours-cell">8.0</td>
+                        <td class="description-cell">Feature development - user dashboard</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td><span class="status-badge status-entered">Entered</span></td>
+                        <td><button class="btn-enter entered">✓ Entered</button></td>
+                    </tr>
+                    <tr>
+                        <td>Oct 24, 2025</td>
+                        <td class="hours-cell">8.0</td>
+                        <td class="description-cell">Database optimization and performance tuning</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td><span class="status-badge status-entered">Entered</span></td>
+                        <td><button class="btn-enter entered">✓ Entered</button></td>
+                    </tr>
+                    <tr>
+                        <td>Oct 23, 2025</td>
+                        <td class="hours-cell">10.0</td>
+                        <td class="description-cell">Site survey and requirements gathering</td>
+                        <td>3h</td>
+                        <td>-</td>
+                        <td><span class="status-badge status-entered">Entered</span></td>
+                        <td><button class="btn-enter entered">✓ Entered</button></td>
+                    </tr>
+                    <tr>
+                        <td>Oct 22, 2025</td>
+                        <td class="hours-cell">8.0</td>
+                        <td class="description-cell">API integration and documentation</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td><span class="status-badge status-entered">Entered</span></td>
+                        <td><button class="btn-enter entered">✓ Entered</button></td>
+                    </tr>
+                    <tr>
+                        <td>Oct 21, 2025</td>
+                        <td class="hours-cell">8.0</td>
+                        <td class="description-cell">Team meetings and sprint planning</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td><span class="status-badge status-entered">Entered</span></td>
+                        <td><button class="btn-enter entered">✓ Entered</button></td>
+                    </tr>
+                    <tr>
+                        <td>Oct 18, 2025</td>
+                        <td class="hours-cell">8.0</td>
+                        <td class="description-cell">UI/UX improvements and user testing</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td><span class="status-badge status-entered">Entered</span></td>
+                        <td><button class="btn-enter entered">✓ Entered</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Back button handler
+        document.querySelector('.btn-back').addEventListener('click', function() {
+            alert('Navigate back to Admin Dashboard (This is a UI demo)');
+        });
+
+        // Mark All as Entered handler
+        document.querySelector('.btn-mark-all').addEventListener('click', function() {
+            if (confirm('Mark all entries as "Entered"?')) {
+                alert('All entries marked as Entered (This is a UI demo)');
+            }
+        });
+
+        // Enter button handlers
+        document.querySelectorAll('.btn-enter').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const row = this.closest('tr');
+                const statusBadge = row.querySelector('.status-badge');
+
+                if (this.classList.contains('entered')) {
+                    alert('This entry is already marked as Entered (This is a UI demo)');
+                } else {
+                    alert('Entry marked as Entered (This is a UI demo)');
+                }
+            });
+        });
+
+        // Profile link
+        document.getElementById('profile-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Navigate to Profile/Settings (This is a UI demo)');
+        });
+    </script>
+</body>
+</html>

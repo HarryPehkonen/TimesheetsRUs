@@ -1,0 +1,105 @@
+digraph TimesheetsRUsNavigation {
+    rankdir=TB;
+    node [shape=box, style=rounded, fontname="Arial"];
+
+    // All screens completed - no style definitions needed here
+
+    // Common/Shared screens
+    node [style="rounded,filled", fillcolor="#e3f2fd", color="#3498db"];
+    Login [label="Login Screen\n(OAuth)"];
+    ProfileSettings [label="Profile/Settings\n- Edit name\n- Theme toggle\n- Logout"];
+
+    // Employee screens (green = completed)
+    node [style="rounded,filled", fillcolor="#e8f5e9", color="#27ae60"];
+    EmployeeHome [label="Employee Home\n- Quick entry\n- Current period stats\n- Navigation tiles"];
+    DailyTimeEntry [label="Daily Time Entry"];
+    TimesheetHistory [label="Timesheet History"];
+    PayPeriodSummary [label="Pay Period Summary"];
+
+    // Admin screens (blue = completed)
+    node [style="rounded,filled", fillcolor="#dce7f5", color="#667eea"];
+    AdminDashboard [label="Admin Dashboard\n- Current period\n- Queue widget"];
+    EntriesQueue [label="Entries Queue\n- All periods\n- Bulk processing"];
+    EmployeeDetail [label="Employee Timesheet\nDetail"];
+    HistoricalReports [label="Historical Reports"];
+
+    // Main authentication flow
+    Login -> EmployeeHome [label="employee\nlogin", color="#27ae60", penwidth=2];
+    Login -> AdminDashboard [label="admin\nlogin", color="#667eea", penwidth=2];
+
+    // Employee navigation flows
+    EmployeeHome -> DailyTimeEntry [label="new entry", color="#27ae60"];
+    EmployeeHome -> TimesheetHistory [label="view history", color="#27ae60"];
+    EmployeeHome -> PayPeriodSummary [label="view summary", color="#27ae60"];
+
+    DailyTimeEntry -> EmployeeHome [label="save & back", color="#27ae60", style=dashed];
+    DailyTimeEntry -> TimesheetHistory [label="save & continue", color="#27ae60", style=dashed];
+
+    TimesheetHistory -> DailyTimeEntry [label="edit entry", color="#27ae60"];
+
+    PayPeriodSummary -> DailyTimeEntry [label="edit entry", color="#27ae60"];
+    PayPeriodSummary -> TimesheetHistory [label="view all", color="#27ae60", style=dashed];
+
+    // Employee to settings
+    EmployeeHome -> ProfileSettings [label="profile", color="#7f8c8d", style=dashed];
+    DailyTimeEntry -> ProfileSettings [label="profile", color="#7f8c8d", style=dashed];
+    TimesheetHistory -> ProfileSettings [label="profile", color="#7f8c8d", style=dashed];
+    PayPeriodSummary -> ProfileSettings [label="profile", color="#7f8c8d", style=dashed];
+
+    // Admin navigation flows
+    AdminDashboard -> EntriesQueue [label="Process Queue\n(button click)", color="#667eea", penwidth=2];
+    AdminDashboard -> EmployeeDetail [label="click employee", color="#667eea"];
+    AdminDashboard -> HistoricalReports [label="menu/link", color="#667eea", style=dashed];
+
+    EntriesQueue -> AdminDashboard [label="back", color="#667eea", style=dashed];
+    EntriesQueue -> EmployeeDetail [label="view employee\n(optional)", color="#667eea", style=dashed];
+
+    EmployeeDetail -> AdminDashboard [label="back", color="#667eea", style=dashed];
+    EmployeeDetail -> EntriesQueue [label="to queue", color="#667eea", style=dashed];
+
+    HistoricalReports -> AdminDashboard [label="back", color="#667eea", style=dashed];
+
+    // Admin to settings
+    AdminDashboard -> ProfileSettings [label="profile", color="#7f8c8d", style=dashed];
+    EntriesQueue -> ProfileSettings [label="profile", color="#7f8c8d", style=dashed];
+    EmployeeDetail -> ProfileSettings [label="profile", color="#7f8c8d", style=dashed];
+    HistoricalReports -> ProfileSettings [label="profile", color="#7f8c8d", style=dashed];
+
+    // Logout flow
+    ProfileSettings -> Login [label="logout", color="#e74c3c", penwidth=2];
+
+    // Legend
+    subgraph cluster_legend {
+        label="Legend";
+        style=filled;
+        color=lightgrey;
+
+        node [shape=box, style="rounded,filled"];
+
+        leg_employee [label="Employee Screen", fillcolor="#e8f5e9", color="#27ae60"];
+        leg_admin [label="Admin Screen", fillcolor="#dce7f5", color="#667eea"];
+        leg_shared [label="Shared Screen", fillcolor="#e3f2fd", color="#3498db"];
+
+        leg_employee -> leg_admin [style=invis];
+        leg_admin -> leg_shared [style=invis];
+    }
+
+    // Notes
+    subgraph cluster_notes {
+        label="Key Navigation Patterns";
+        style=filled;
+        color="#f0f0f0";
+        fontsize=10;
+
+        node [shape=note, style=filled, fillcolor=lightyellow];
+
+        note1 [label="Employee Home:\n- Landing page after login\n- Quick action button\n- Period summaries\n- All screens completed ✅"];
+
+        note2 [label="Queue vs Dashboard:\n- Queue = ALL periods (work queue)\n- Dashboard = CURRENT period\n- Queue has bulk actions"];
+
+        note3 [label="Profile/Settings:\n- Edit first/last name\n- Theme selector (Light/Dark)\n- View email (read-only)\n- Logout button"];
+
+        note1 -> note2 [style=invis];
+        note2 -> note3 [style=invis];
+    }
+}
